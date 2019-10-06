@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<base href="../">
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Demo</title>
+
+	<link href="examples/style.css" rel="stylesheet">
+
+<body class="example5" role="document">
+
+<div class="center-outer fit">
+	<div class="center-inner">
+		<div class="example-window" role="main">
+			<h1>
+				<span>Demo 5</span> Opt-in</h1>
+
+			<p>
+				An
+				<a href="http://cookieconsent.insites.com/documentation/compliance/#opt-in">opt-in</a> notice ask users
+				for permission to use cookies. Unless they say so, no cookies will be used. A small
+				tab allows them to change their mind later.
+			</p>
+
+			<ul class="example-selector"></ul>
+
+			<a href="examples/example-4-opt-out.html" class="page-switcher page-switcher-prev" title="Previous demo">&#9664;</a>
+			<a href="examples/example-6-location.html" class="page-switcher page-switcher-next" title="Next demo">&#9654;</a>
+
+		</div>
+	</div>
+</div>
+
+<script src="src/bundle.js"></script>
+<script>
+
+    const CC = window.CookieConsent;
+    const cc = new CC({
+        type: 'categories',
+        content: {
+            header: 'Cookie-Einstellungen',
+            message: 'Diese Website verwendet Cookies, um sicherzustellen, dass Sie das beste Ergebnis auf unserer Website erzielen.',
+            link: 'Mehr Informationen',
+            href: 'https://de.partengineering.ddev.site/impressum/',
+			save: 'Auswahl bestätigen',
+            selectAll: 'Alle auswählen',
+            policy: 'Cookie Richtlinien'
+        },
+        position: 'centered',
+        revokable: true,
+        palette: {
+            popup: {background: '#fff', text: '#000', link: '#000'},
+            button: { background: '#fff', text: '#000', border: '#000' },
+            highlight: { background: '#ffbd32', text: '#000', border: '#ffbd32' }
+        },
+		layouts : {
+            basic : '{{header}}{{messagelink}}{{compliance}}'
+		},
+        categories : {
+            uncategorized: {
+                disabled: true
+			},
+            essential: {
+                label: 'Notwendig',
+                mandatory: true
+            },
+            personalization: {
+                disabled: true
+            },
+            analytics: {
+                label: 'Statistik'
+            },
+            marketing: {
+                disabled: true
+            }
+        }
+    });
+    cc.on("initialized", (...args) => {console.log(args);console.debug('initialized')});
+    cc.on("statusChanged", (...args) => {console.log(args);console.debug('statusChanged')});
+
+</script>

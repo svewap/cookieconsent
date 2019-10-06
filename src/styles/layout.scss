@@ -52,6 +52,12 @@
   flex: 1 0 auto;
 }
 
+.cc-centered {
+  left: 50%;
+  transform: translate(-50%);
+  top: 50px;
+}
+
 /**************************************** BANNER ****************************************/
 
 .cc-window.cc-banner {
@@ -100,11 +106,7 @@
     text-align: right;
   }
   .cc-btn {
-    margin: 0;
-    &.cc-save {
-      margin        : 0;
-      display       : inline-block;
-    }
+    display       : inline-block;
   }
 }
 .cc-categories {
@@ -112,41 +114,52 @@
   .cc-category{
     display  : flex;
     max-width: 100%;
-    margin   : 0 2px;
+    margin   : 0 50px 0 0;
     position : relative;
   }
+  label {
+    display: block;
+    position: relative;
+    padding: 4px 4px 4px 35px;
+    cursor: pointer;
+    input[type=checkbox]{
+      position: absolute;
+      top: 4px;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border-radius: 4px;
+      border: 2px solid #666;
+    }
+  }
   .cc-btn {
+    position: relative;
     border-right: none;
     outline     : none;
     text-transform: capitalize;
-    input[type=checkbox]{
-      float: left;
-      height: 26px;
-      width: calc( 100% - 22px );
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 2px;
-      cursor: pointer;
-    }
-    &:not(.cc-info):not(.cc-save){
-      padding-left: 26px;
-    }
   }
   .cc-info {
-    border-left : none;
-    border-right: 2px solid lightgrey;
+    border : none;
     padding     : 4px;
     font-variant: all-small-caps;
+    cursor: pointer;
+    outline: none;
+    width: 26px;
+    background: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve"><g id="Icons" style="opacity:0.75;"><g id="help"><path id="circle" style="fill-rule:evenodd;clip-rule:evenodd;" d="M12.001,2.085c-5.478,0-9.916,4.438-9.916,9.916 c0,5.476,4.438,9.914,9.916,9.914c5.476,0,9.914-4.438,9.914-9.914C21.915,6.523,17.477,2.085,12.001,2.085z M12.002,20.085 c-4.465,0-8.084-3.619-8.084-8.083c0-4.465,3.619-8.084,8.084-8.084c4.464,0,8.083,3.619,8.083,8.084 C20.085,16.466,16.466,20.085,12.002,20.085z"/> <g id="question_mark"><path id="top" style="fill-rule:evenodd;clip-rule:evenodd;" d="M11.766,6.688c-2.5,0-3.219,2.188-3.219,2.188l1.411,0.854 c0,0,0.298-0.791,0.901-1.229c0.516-0.375,1.625-0.625,2.219,0.125c0.701,0.885-0.17,1.587-1.078,2.719 C11.047,12.531,11,15,11,15h1.969c0,0,0.135-2.318,1.041-3.381c0.603-0.707,1.443-1.338,1.443-2.494S14.266,6.688,11.766,6.688z" /><rect id="bottom" x="11" y="16" style="fill-rule:evenodd;clip-rule:evenodd;" width="2" height="2"/></g></g></g></svg>') right no-repeat;
     &:focus + .cc-tooltip{
       display: block;
     }
+  }
+  .cc-select-all {
+    background-color: #99007c;
   }
   .cc-tooltip{
     display      : none;
     position     : absolute;
     z-index      : 3;
     width        : 190px;
+    right        : -180px;
     bottom       : 46px;
     padding      : 8px;
     border       : thin solid lightgrey;

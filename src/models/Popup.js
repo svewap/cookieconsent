@@ -1,36 +1,25 @@
 "use strict"
 
 import Base from "./Base"
-import defaultOptions from "../options/popup"
 import {
-  categories,
-  statuses,
   statusDismiss,
   statusAllow
 } from "../constants"
 import {
   addCustomStylesheet,
-  getCookie,
   hash,
   interpolateString,
   isMobile,
   isPlainObject,
-  isValidStatus,
-  setCookie,
   throttle,
   traverseDOMPath,
 } from "../utils"
 
 export default class Popup extends Base {
-  constructor( options ) {
-    super( defaultOptions, options )
-    this.userCategories = {
-      UNCATEGORIZED  : 'DISMISS',
-      ESSENTIAL      : 'ALLOW',
-      PERSONALIZATION: 'DISMISS',
-      ANALYTICS      : 'DISMISS',
-      MARKETING      : 'DISMISS'
-    }
+  constructor( options, cookieConstent ) {
+    super( options )
+    this.cookieConstent = cookieConstent
+
     this.customStyles = {}
     this.hasTransition = !!(function() {
       const el = document.createElement('div')
@@ -53,23 +42,12 @@ export default class Popup extends Base {
       return ''
     })()
 
-    // returns true if `onComplete` was called
-    if (this.canUseCookies()) {
-      // user has already answered
-      this.options.enabled = false
-    }
-    // apply blacklist / whitelist
-    if (this.options.blacklistPage.includes(location.pathname)) {
-      this.options.enabled = false
-    }
-    if (this.options.whitelistPage.includes(location.pathname)) {
-      this.options.enabled = true
-    }
 
     // the full markup either contains the wrapper or it does not (for multiple instances)
     let cookiePopup = this.options.window
       .replace('{{classes}}', this.getPopupClasses().join(' '))
       .replace('{{children}}', this.getPopupInnerMarkup())
+
 
     // if user passes html, use it instead
     const customHTML = this.options.overrideHTML
@@ -94,10 +72,6 @@ export default class Popup extends Base {
 
     this.applyAutoDismiss()
     this.applyRevokeButton()
-
-    if (this.options.autoOpen) {
-      this.autoOpen()
-    }
   }
 
   open() {
@@ -113,7 +87,7 @@ export default class Popup extends Base {
       if (this.options.revokable) {
         this.toggleRevokeButton()
       }
-      this.emit( "popupOpened" )
+      this.emit( 'popupOpened' )
     }
 
     return this
@@ -132,7 +106,7 @@ export default class Popup extends Base {
       if (showRevoke && this.options.revokable) {
         this.toggleRevokeButton(true)
       }
-      this.emit( "popupClosed" )
+      this.emit( 'popupClosed' )
     }
 
     return this
@@ -218,108 +192,6 @@ export default class Popup extends Base {
     if (this.revokeBtn) this.revokeBtn.style.display = show ? '' : 'none'
   }
 
-  revokeChoice(preventOpen) {
-    this.options.enabled = true
-    this.clearStatuses()
-
-    this.emit( "revokeChoice" )
-
-    if (!preventOpen) {
-      this.autoOpen()
-    }
-  }
-
-  /**
-   * Has the user responded to the banner
-   * @return { boolean } - true if any cookies have been set
-   */
-  hasAnswered() {
-    return this.getStatuses().some( status => !!status )
-  }
-
-  /**
-   * Indicates if the user has given consent to all of the categories
-   * @return { array<boolean> } - true if consent has been given
-   */
-  hasConsented() {
-    return this.getStatuses().map( status => status === statusAllow || status === statusDismiss )
-  }
-
-  // opens the popup if no answer has been given
-  autoOpen() {
-    const hasAnswered = this.hasAnswered()
-    if (!hasAnswered && this.options.enabled) {
-      this.open()
-    } else if (hasAnswered && this.options.revokable) {
-      this.toggleRevokeButton(true)
-    }
-  }
-
-  /** 
-   * Set's cookie statuses
-   * @param { string<status> } allOrUndef      - If this is the only param, set ALL if not, set Uncategorized cookies statuses set to value.
-   * @param { string<status> } essential       - Essential Cookies status set to value
-   * @param { string<status> } personalization - Preferences / Functionality set to value
-   * @param { string<status> } analytics       - Analytis Cookies status set to value
-   * @param { string<status> } marketing       - Marketing Cookies status set to value
-   * @return { undefined }
-  */
-  setStatuses() {
-    const { name, expiryDays, domain, path, secure } = this.options.cookie
-
-    const updateCategoryStatus = ( categoryName, status ) => {
-      if (isValidStatus(status)) {
-        const cookieName = name+'_'+categoryName
-        const chosenBefore = statuses.indexOf( getCookie(cookieName) ) >= 0
-        setCookie(cookieName, status, expiryDays, domain, path, secure)
-        this.emit( "statusChanged", cookieName, status, chosenBefore )
-      } else {
-        this.clearStatuses()
-      }
-    }
-    if ( arguments.length === 0 ) {
-      categories.forEach( category => updateCategoryStatus( category, this.userCategories[ category ] ) )
-    } else if (arguments.length === 1){
-      categories.forEach( category => updateCategoryStatus( category, arguments[ 0 ] ) )
-    } else if ( arguments.length > 1 ) {
-      arguments.forEach( ( categoryStatus, index ) => {
-        updateCategoryStatus( this.userCategories[ index ], categoryStatus )
-      })
-    }
-  }
-
-  /**
-   * Get all cookie categoies statuses
-   * @return { array<string> } - cookie categories status in order of categories
-   */
-  getStatuses() {
-    return categories.map( categoryName => getCookie(this.options.cookie.name+'_'+categoryName) )
-  }
-
-  /**
-   * Clear all cookie categoies statuses
-   */
-  clearStatuses() {
-    const { name, domain, path } = this.options.cookie
-    categories.forEach( categoryName => {
-      setCookie(name+'_'+categoryName, '', -1, domain, path)
-    })
-  }
-  
-  canUseCookies() {
-    if (!window.navigator.cookieEnabled || window.CookiesOK || window.navigator.CookiesOK ) {
-      return true
-    }
-
-    const statusesValues = this.getStatuses()
-    const matches = statusesValues.map( ( status, index ) => ( { [categories[index]]: isValidStatus( status ) } ) )
-    const hasMatches = matches.filter( match => match[Object.keys(match)[0]] ).length > 0
-    statusesValues.forEach( ( status, index ) =>
-      this.userCategories[ categories[ index ] ] === status
-        ? status : this.userCategories[ categories[ index ] ] )
-
-    return hasMatches
-  }
 
   // top, bottom, left, right
   getPositionClasses() {
@@ -329,7 +201,7 @@ export default class Popup extends Base {
   getPopupClasses() {
     const opts = this.options
     let positionStyle =
-      opts.position == 'top' || opts.position == 'bottom'
+      opts.position === 'top' || opts.position === 'bottom'
         ? 'banner'
         : 'floating'
 
@@ -360,6 +232,24 @@ export default class Popup extends Base {
     return classes
   }
 
+  getRevokeButtonClasses() {
+    const opts = this.options
+
+    const classes = []
+    classes.push('cc-'+this.options.revokePosition)
+    if (this.options.animateRevokable) {
+      classes.push('cc-animate')
+    }
+    if (this.customStyleSelector) {
+      classes.push(this.customStyleSelector)
+    }
+    if (this.options.theme) {
+      classes.push('cc-theme-'+this.options.theme)
+    }
+
+    return classes
+  }
+
   getPopupInnerMarkup() {
     const interpolated = {}
     const opts = this.options
@@ -369,6 +259,24 @@ export default class Popup extends Base {
       opts.elements.link = '' 
       opts.elements.messagelink = opts.elements.message
     }
+
+    let categories = Object.keys(this.options.categories).map(name => {
+      const settings = opts.categories[name]
+      if (settings.disabled !== undefined && settings.disabled) return
+      const checked = settings.preselected || settings.status === statusAllow ? ' checked=checked' : ''
+      const disabled = settings.mandatory ? ' disabled' : ''
+      return [opts.elements.category.replace('{{label}}', settings.label)
+          .replace('{{category}}', name)
+          .replace('{{checked}}', checked)
+          .replace('{{disabled}}', disabled)
+          .replace('{{tooltip}}', settings.tooltip)]
+    }).join('');
+
+    opts.elements.categories = opts.elements.categories.replace('{{categories}}', categories)
+
+    opts.elements.saveBtn = opts.elements.saveBtn.replace('{{label}}', opts.content.save)
+    opts.elements.selectAllBtn = opts.elements.selectAllBtn.replace('{{label}}', opts.content.selectAll)
+
 
     Object.keys(opts.elements).forEach( prop => {
       interpolated[prop] = interpolateString(
@@ -423,7 +331,7 @@ export default class Popup extends Base {
       })
       checkbox.addEventListener( 'click', event => (event.stopPropagation()) )
     })
-    el.querySelectorAll(".cc-info").forEach( showInfo => {
+    el.querySelectorAll('.cc-info').forEach( showInfo => {
       showInfo.addEventListener('mousedown', function ( event ) {
         if ( this === document.activeElement  ) {
           this.blur()
@@ -440,7 +348,7 @@ export default class Popup extends Base {
           cont.insertBefore(el, cont.firstChild);
         }
       } catch ( error ) {
-        throw new Error( "No container to attach too. Make sure the DOM has loaded. Is your script loaded just before the `</body>` tag?" )
+        throw new Error( 'No container to attach too. Make sure the DOM has loaded. Is your script loaded just before the `</body>` tag?' )
       }
     }
 
@@ -450,33 +358,46 @@ export default class Popup extends Base {
   handleButtonClick(event) {
     // returns the parent element with the specified class, or the original element - null if not found
     const btn = traverseDOMPath(event.target, 'cc-btn') || event.target
-    
-    if (btn.classList.contains( 'cc-btn' ) && btn.classList.contains( 'cc-save' )){
-      this.setStatuses()
-      this.close(true)
-      return
-    }
-    if (btn.classList.contains( 'cc-btn' )) {
-      const matches = btn.className.match(
-        new RegExp('\\bcc-(' + statuses.map( str => str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&') ).join('|') + ')\\b')
-      )
-      const match = (matches && matches[1]) || false
-      if (match) {
-        this.setStatuses(match)
-        this.close(true)
+    const opts = this.options;
+
+    if (btn.dataset.action !== undefined) {
+      if (btn.dataset.action === 'checkAllAndSave') {
+        this.checkAll()
       }
-      return
+      if (btn.dataset.action === 'save' || btn.dataset.action === 'checkAllAndSave') {
+        this.cookieConstent.save()
+        this.close(true)
+        return
+      }
+      if (btn.dataset.action === 'close') {
+        this.cookieConstent.setStatuses(statusDismiss)
+        this.close(true)
+        return
+      }
+      if (btn.dataset.action === 'revoke') {
+        this.cookieConstent.revokeChoice()
+      }
     }
-    if (btn.classList.contains( 'cc-close' )) {
-      this.setStatuses(statusDismiss)
-      this.close(true)
-      return
-    }
-    if (btn.classList.contains( 'cc-revoke' )) {
-      this.revokeChoice()
-      return
-    }
+
   }
+
+  /**
+   * check all visible categories
+   */
+  checkAll() {
+    this.element.querySelectorAll('.cc-categories input[type=checkbox]').forEach((checkbox,key) => {
+      checkbox.checked = true
+    });
+  }
+
+  getCheckBoxValues() {
+    let values = [];
+    this.element.querySelectorAll('.cc-categories input[type=checkbox]').forEach((checkbox,key) => {
+      values[checkbox.attributes['name'].value] = checkbox.checked !== false
+    })
+    return values
+  }
+
 
   attachCustomPalette(palette) {
     const hashStr = hash(JSON.stringify(palette))
@@ -581,22 +502,13 @@ export default class Popup extends Base {
 
   applyRevokeButton() {
     // revokable is true if advanced compliance is selected
-    if (this.options.type != 'info') this.options.revokable = true
+    if (this.options.type !== 'info') this.options.revokable = true
     // animateRevokable false for mobile devices
     if (isMobile()) this.options.animateRevokable = false
 
     if (this.options.revokable) {
-      const classes = this.getPositionClasses()
-      if (this.options.animateRevokable) {
-        classes.push('cc-animate')
-      }
-      if (this.customStyleSelector) {
-        classes.push(this.customStyleSelector)
-      }
-      if (this.options.theme) {
-        classes.push('cc-theme-'+this.options.theme)
-      }
-      console.log( this.options.content.policy )
+      const classes = this.getRevokeButtonClasses()
+
       const revokeBtn = this.options.revokeBtn
         .replace('{{classes}}', classes.join(' '))
         .replace('{{policy}}', this.options.content.policy)
@@ -628,7 +540,7 @@ export default class Popup extends Base {
     }
   }
   destroy(){
-    console.warn( "Destroying...")
+    console.warn( 'Destroying...')
     if ( this.element ){
       this.element.remove()
     }

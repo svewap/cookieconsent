@@ -58,7 +58,7 @@ export const addCustomStylesheet = (id, palette, prefix) => {
                   ? highlight.text
                   : getContrast(highlight.background);
               highlight.border = highlight.border ? highlight.border : 'transparent';
-              colorStyles[prefix + ' .cc-highlight .cc-btn:first-child'] = [
+              colorStyles[prefix + ' .cc-highlight'] = [
                   'color: ' + highlight.text,
                   'border-color: ' + highlight.border,
                   'background-color: ' + highlight.background,
