@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import Base from "./Base"
 import Legal from "./Legal"
@@ -14,9 +14,9 @@ import defaultOptions from "../options/default"
 
 export default class CookieConsent extends Base {
   constructor( options = {} ){
-    super( defaultOptions, options )
+    super( defaultOptions, options );
 
-    let answers = this.getFilteredStatusValuesFromCookies()
+    let answers = this.getFilteredStatusValuesFromCookies();
     Object.keys(answers).map(category => {
       this.options.categories[category].status = answers[category]
     });
@@ -32,7 +32,7 @@ export default class CookieConsent extends Base {
 
     // if they have already answered
     if (answers.length > 0) {
-      this.options.enabled = false
+      this.options.enabled = false;
       setTimeout( () => this.emit( 'initialized', answers ) )
     } else if ( this.options.legal && this.options.legal.countryCode ) {
       this.initializationComplete( { code: this.options.legal.countryCode } )
@@ -46,8 +46,8 @@ export default class CookieConsent extends Base {
     if (result.code) {
       this.options = new Legal(this.options.legal).applyLaw( this.options, result.code )
     }
-    this.popup = new Popup( this.options, this )
-    setTimeout( () => this.emit('initialized', this.popup ), 0 )
+    this.popup = new Popup( this.options, this );
+    setTimeout( () => this.emit('initialized', this.popup ), 0 );
 
     if (this.options.autoOpen && this.options.enabled) {
       this.autoOpen()
@@ -77,10 +77,10 @@ export default class CookieConsent extends Base {
 
 
   revokeChoice(preventOpen) {
-    this.options.enabled = true
-    this.clearCookieValues()
+    this.options.enabled = true;
+    this.clearCookieValues();
 
-    this.emit('revokeChoice')
+    this.emit('revokeChoice');
 
     if (!preventOpen) {
       this.autoOpen()
@@ -92,7 +92,7 @@ export default class CookieConsent extends Base {
    * save current status values
    */
   save() {
-    this.emit('save')
+    this.emit('save');
     this.setStatuses()
   }
 
@@ -102,11 +102,11 @@ export default class CookieConsent extends Base {
    * @param status
    */
   setCategoryCookieValue( categoryName, status ) {
-    const { name, expiryDays, domain, path, secure } = this.options.cookie
+    const { name, expiryDays, domain, path, secure } = this.options.cookie;
     if (isValidStatus(status)) {
-      const cookieName = name+'_'+categoryName
-      const chosenBefore = statuses.indexOf( getCookie(cookieName) ) >= 0
-      setCookie(cookieName, status, expiryDays, domain, path, secure)
+      const cookieName = name+'_'+categoryName;
+      const chosenBefore = statuses.indexOf( getCookie(cookieName) ) >= 0;
+      setCookie(cookieName, status, expiryDays, domain, path, secure);
       this.emit( 'statusChanged', cookieName, status, chosenBefore )
     } else {
       this.clearCookieValues()
@@ -119,8 +119,8 @@ export default class CookieConsent extends Base {
    */
   setStatuses() {
 
-    let checkBoxValues = this.popup.getCheckBoxValues()
-    console.debug(checkBoxValues)
+    let checkBoxValues = this.popup.getCheckBoxValues();
+    console.debug(checkBoxValues);
     Object.keys(checkBoxValues).map(categoryName => {
       this.setCategoryCookieValue(categoryName, checkBoxValues[categoryName] ? statusAllow : statusDismiss)
     })
@@ -132,11 +132,11 @@ export default class CookieConsent extends Base {
    * @return { array<string> } - cookie categories status in order of categories
    */
   getStatusValuesFromCookies() {
-    let status = []
+    let status = [];
     Object.keys(this.options.categories).map(categoryName => {
-      let cookieValue = getCookie(this.options.cookie.name+'_'+categoryName)
+      let cookieValue = getCookie(this.options.cookie.name+'_'+categoryName);
       status[categoryName] = isValidStatus(cookieValue) ? cookieValue : undefined
-    })
+    });
     return status
   }
 
@@ -144,13 +144,13 @@ export default class CookieConsent extends Base {
    *
    */
   getFilteredStatusValuesFromCookies() {
-    let statusValues = this.getStatusValuesFromCookies()
-    let filteredStatusValues = {}
+    let statusValues = this.getStatusValuesFromCookies();
+    let filteredStatusValues = {};
     Object.keys(statusValues).map(key => {
       if (statusValues[key] !== undefined) {
         filteredStatusValues[key] = statusValues[key]
       }
-    })
+    });
     return filteredStatusValues;
   }
 
@@ -158,7 +158,7 @@ export default class CookieConsent extends Base {
    * Clear all cookie categories statuses
    */
   clearCookieValues() {
-    const { name, domain, path } = this.options.cookie
+    const { name, domain, path } = this.options.cookie;
     Object.keys(this.options.categories).map(categoryName => {
       setCookie(name+'_'+categoryName, '', -1, domain, path)
     })
@@ -185,7 +185,7 @@ export default class CookieConsent extends Base {
 
   // opens the popup if no answer has been given
   autoOpen() {
-    const hasAnswered = this.hasAnswered()
+    const hasAnswered = this.hasAnswered();
     if (!hasAnswered && this.options.enabled) {
       this.popup.open()
     } else if (hasAnswered && this.options.revokable) {
@@ -202,4 +202,4 @@ statuses.reduce( ( obj, status ) =>
   enumerable: false,
   writeable: false,
   configurable: false
-}), obj ), CookieConsent )
+}), obj ), CookieConsent );

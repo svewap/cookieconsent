@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import {
   isValidStatus,
@@ -8,8 +8,8 @@ import {
 
 describe( "Utils::Validation", () => {
   describe( "All exports are available" , () => {
-    test( "isValidStatus", () => expect( isValidStatus ).toBeInstanceOf( Function ) )
-    test( "isPlainObject", () => expect( isPlainObject ).toBeInstanceOf( Function ) )
+    test( "isValidStatus", () => expect( isValidStatus ).toBeInstanceOf( Function ) );
+    test( "isPlainObject", () => expect( isPlainObject ).toBeInstanceOf( Function ) );
     test( "isMobile", () => expect( isMobile ).toBeInstanceOf( Function ) )
   })
-})
+});

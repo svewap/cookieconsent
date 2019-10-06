@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import Popup from "./Popup"
 import Base from "./Base"
@@ -39,19 +39,19 @@ const isPopup = popup => (
   expect( popup.userCategories ).toBeInstanceOf( Object ),
   expect( popup.customStyles ).toBeInstanceOf( Object ),
   expect( Object.keys( popup.userCategories ) ).toStrictEqual( categories )
-)
+);
 const hasCorrectOptions = ( popup, expecteds ) => (
   Object.entries( expecteds ).forEach( ( [ key, value ] ) => {
     test( "`" + key + "`", () => expect( popup.options[ key ] ).toStrictEqual( value ) )
   })
-)
+);
 
 describe( "Popup Class", () => {
   describe( "as default" , () => {
-    const popup = new Popup()
-    test("instantiates", () => isPopup( popup ) )
+    const popup = new Popup();
+    test("instantiates", () => isPopup( popup ) );
     describe( "has the correct options", () => hasCorrectOptions( popup, defaultOptions ) )
-  })
+  });
   describe( "with custom options", () => {
     const options = {
       type     : "info",
@@ -75,16 +75,16 @@ describe( "Popup Class", () => {
       palette  : {
         popup: { background: "#000000", text: "#fff", link: "#fff" }
       }
-    }
-    const popup = new Popup( options )
-    test("instantiates", () => isPopup( popup ) )
+    };
+    const popup = new Popup( options );
+    test("instantiates", () => isPopup( popup ) );
     describe( "has the correct options", () => hasCorrectOptions( popup, mergeOptions( defaultOptions, options ) ) )
-  })
+  });
   describe( "showLink options set to false", () => {
     const options = {
       type: "opt-in"
-    }
-    const popup = new Popup( options )
+    };
+    const popup = new Popup( options );
     describe( "updates `content` options `link` and `messagelink`", () => {
       hasCorrectOptions(
         popup,
@@ -96,7 +96,7 @@ describe( "Popup Class", () => {
         )
       )
     })
-  })
+  });
 
   describe( "when `type` is not 'info'", () =>{
     const options = {
@@ -104,11 +104,11 @@ describe( "Popup Class", () => {
         message: "<div class='test-message'>{{message}}</div>"
       },
       showLink : false
-    }
-    const popup = new Popup( options )
+    };
+    const popup = new Popup( options );
     describe( "revokable is set to true progmatically", () => {
 
     })
   })
 
-})
+});

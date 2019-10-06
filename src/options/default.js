@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import { statusDeny, statusAllow, statusDismiss, categories }  from "../constants/index.js"
 

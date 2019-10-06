@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import Base from "./Base"
 import defaultOptions from "../options/legal"
@@ -15,11 +15,11 @@ export default class Legal extends Base {
     }
   }
   applyLaw( options, countryCode ){
-    const country = this.get(countryCode)
+    const country = this.get(countryCode);
 
     if (!country.hasLaw) {
       // The country has no cookie law
-      options.enabled = false
+      options.enabled = false;
       this.emit( "noCookieLaw", countryCode, country )
     }
 
@@ -31,7 +31,7 @@ export default class Legal extends Base {
 
       if (country.explicitAction) {
         // The user must explicitly click the consent button
-        options.dismissOnScroll = false
+        options.dismissOnScroll = false;
         options.dismissOnTimeout = false
       }
     }

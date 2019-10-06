@@ -1,6 +1,6 @@
-"use strict"
+"use strict";
 
-const toError = obj => new Error('Error [' + (obj.code || 'UNKNOWN') + ']: ' + obj.error)
+const toError = obj => new Error('Error [' + (obj.code || 'UNKNOWN') + ']: ' + obj.error);
 
 export default {
   // The default timeout is 5 seconds. This is mainly needed to catch JSONP requests that error.
@@ -42,7 +42,7 @@ export default {
         headers: ['Accept: application/json'],
         callback: function(done, response) {
           try {
-            const json = JSON.parse(response)
+            const json = JSON.parse(response);
             return json.error
               ? toError(json)
               : {
@@ -64,7 +64,7 @@ export default {
         isScript: true, // this is JSONP, therefore we must set it to run as a script
         callback: function(done, response) {
           try {
-            const json = JSON.parse(response)
+            const json = JSON.parse(response);
             return json.statusCode == 'ERROR'
               ? toError({error: json.statusMessage})
               : {
@@ -90,7 +90,7 @@ export default {
               new Error(
                 'Unexpected response format. The downloaded script should have exported `geoip2` to the global scope'
               )
-            )
+            );
             return
           }
 

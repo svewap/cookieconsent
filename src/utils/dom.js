@@ -1,36 +1,36 @@
-"use strict"
+"use strict";
 
 import { getContrast, getHoverColor } from './style'
 
 export const traverseDOMPath = ( elem, className ) =>
   !elem || !elem.parentNode
   ? null : elem.classList.contains(className)
-  ? elem : traverseDOMPath(elem.parentNode, className)
+  ? elem : traverseDOMPath(elem.parentNode, className);
 
 export const addCustomStylesheet = (id, palette, prefix) => {
-  const colorStyles = {}
-  const { popup, button, highlight, saveButton } = palette
+  const colorStyles = {};
+  const { popup, button, highlight, saveButton } = palette;
 
   // needs background colour, text and link will be set to black/white if not specified
   if (popup) {
       // assumes popup.background is set
-      popup.text = popup.text ? popup.text : getContrast(popup.background)
-      popup.link = popup.link ? popup.link : popup.text
+      popup.text = popup.text ? popup.text : getContrast(popup.background);
+      popup.link = popup.link ? popup.link : popup.text;
       colorStyles[prefix + ' .cc-tooltip, ' + prefix + ' .cc-tooltip:after'] = [
           'color: ' + popup.text,
           'background-color: ' + popup.background,
-      ]
+      ];
       colorStyles[prefix + '.cc-window'] = [
           'color: ' + popup.text,
           'background-color: ' + popup.background,
-      ]
+      ];
       colorStyles[prefix + '.cc-revoke'] = [
           'color: ' + popup.text,
           'background-color: ' + popup.background,
-      ]
+      ];
       colorStyles[
           prefix + ' .cc-link,' + prefix + ' .cc-link:active,' + prefix + ' .cc-link:visited'
-      ] = ['color: ' + popup.link]
+      ] = ['color: ' + popup.link];
 
       if (button) {
           // assumes button.background is set
@@ -40,7 +40,7 @@ export const addCustomStylesheet = (id, palette, prefix) => {
               'color: ' + button.text,
               'border-color: ' + button.border,
               'background-color: ' + button.background,
-          ]
+          ];
 
           if (button.padding) {
               colorStyles[prefix + ' .cc-btn'].push('padding: ' + button.padding);
@@ -81,11 +81,11 @@ export const addCustomStylesheet = (id, palette, prefix) => {
   }
 
   // this will be interpretted as CSS. the key is the selector, and each array element is a rule
-  const style = document.createElement('style')
-  style.id = id
-  document.head.appendChild( style )
+  const style = document.createElement('style');
+  style.id = id;
+  document.head.appendChild( style );
   Object.entries( colorStyles ).forEach( ( [ prop, value ], index ) =>
     style.sheet.insertRule( `${prop}{${value.join(';')}}`, index )
-  )
+  );
   return style
-}
+};

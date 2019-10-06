@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import {
   getCookie,
@@ -7,7 +7,7 @@ import {
 
 describe( "Utils::Cookie", () => {
   describe( "All exports are available" , () => {
-    test( "getCookie", () => expect( getCookie ).toBeInstanceOf( Function ) )
+    test( "getCookie", () => expect( getCookie ).toBeInstanceOf( Function ) );
     test( "setCookie", () => expect( setCookie ).toBeInstanceOf( Function ) )
   })
-})
+});

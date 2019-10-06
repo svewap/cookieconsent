@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 import Base from "./Base"
 import defaultOptions from "../options/location"
@@ -14,29 +14,29 @@ import { isPlainObject, getScript, makeAsyncRequest } from "../utils"
 
 export default class Location extends Base {
   constructor( options ) {
-    super( defaultOptions, options )
+    super( defaultOptions, options );
     this.currentServiceIndex = -1 // the index (in options) of the service we're currently using
   }
 
   getNextService() {
-    let service
+    let service;
     do {
       service = this.getServiceByIdx(++this.currentServiceIndex)
     } while (
       this.currentServiceIndex < this.options.services.length &&
       !service
-    )
+    );
 
     return service
   }
 
   getServiceByIdx(idx) {
     // This can either be the name of a default locationService, or a function.
-    const serviceOption = this.options.services[idx]
+    const serviceOption = this.options.services[idx];
 
     // If it's a string, use one of the location services.
     if (typeof serviceOption === 'function') {
-      const dynamicOpts = serviceOption()
+      const dynamicOpts = serviceOption();
       return dynamicOpts.name ? 
         Object.assign(
           {},
@@ -64,28 +64,28 @@ export default class Location extends Base {
   // This runs the service located at index `currentServiceIndex`.
   // If the service fails, `runNextServiceOnError` will continue trying each service until all fail, or one completes successfully
   locate(complete, error) {
-    const service = this.getNextService()
+    const service = this.getNextService();
 
     if (!service) {
-      error(new Error('No services to run'))
+      error(new Error('No services to run'));
       return
     }
 
-    this.callbackComplete = complete
-    this.callbackError = error
+    this.callbackComplete = complete;
+    this.callbackError = error;
 
     this.runService(service, this.runNextServiceOnError.bind(this))
   }
 
   // Potentially adds a callback to a url for jsonp.
   setupUrl(service) {
-    const serviceOpts = this.getCurrentServiceOpts()
+    const serviceOpts = this.getCurrentServiceOpts();
     return service.url.replace(/\{(.*?)\}/g, function(_, param) {
       if (param === 'callback') {
-        const tempName = 'callback' + Date.now()
+        const tempName = 'callback' + Date.now();
         window[tempName] = function(res) {
           service.__JSONP_DATA = JSON.stringify(res)
-        }
+        };
         return tempName
       }
       if (param in serviceOpts.interpolateUrl) {
@@ -102,20 +102,20 @@ export default class Location extends Base {
     }
 
     // we call either `getScript` or `makeAsyncRequest` depending on the type of resource
-    const requestFunction = service.isScript ? getScript : makeAsyncRequest
+    const requestFunction = service.isScript ? getScript : makeAsyncRequest;
 
     // both functions have similar signatures so we can pass the same arguments to both
     requestFunction(
       this.setupUrl(service),
       xhr => {
         // if `!xhr`, then `getScript` function was used, so there is no response text
-        let responseText = xhr ? xhr.responseText : ''
+        let responseText = xhr ? xhr.responseText : '';
 
         // if the resource is a script, then this function is called after the script has been run.
         // if the script is JSONP, then a time defined function `callback_{Date.now}` has already
         // been called (as the JSONP callback). This callback sets the __JSONP_DATA property
         if (service.__JSONP_DATA) {
-          responseText = service.__JSONP_DATA
+          responseText = service.__JSONP_DATA;
           delete service.__JSONP_DATA
         }
 
@@ -141,11 +141,11 @@ export default class Location extends Base {
       if (!result) {
         this.onServiceResult( complete, asyncResult)
       }
-    }
+    };
 
     // the function `service.callback` will either extract a country code from `responseText` and return it (in `result`)
     // or (if it has to make additional requests) it will call a `done` callback with the country code when it is ready
-    const result = service.callback(serviceResultHandler, responseText)
+    const result = service.callback(serviceResultHandler, responseText);
 
     if (result) {
       this.onServiceResult( complete, result )
@@ -167,9 +167,9 @@ export default class Location extends Base {
   // if `err` is null, the `onComplete` handler is called with `data`
   runNextServiceOnError(err, data) {
     if (err) {
-      this.logError(err)
+      this.logError(err);
 
-      const nextService = this.getNextService()
+      const nextService = this.getNextService();
 
       if (nextService) {
         this.runService(nextService, this.runNextServiceOnError.bind(this))
@@ -186,7 +186,7 @@ export default class Location extends Base {
   }
 
   getCurrentServiceOpts() {
-    const val = this.options.services[this.currentServiceIndex]
+    const val = this.options.services[this.currentServiceIndex];
 
     if (typeof val == 'string') {
       return {name: val}
@@ -201,7 +201,7 @@ export default class Location extends Base {
 
   // calls the `onComplete` callback after resetting the `currentServiceIndex`
   completeService(fn, data) {
-    this.currentServiceIndex = -1
+    this.currentServiceIndex = -1;
 
     fn && fn(data)
   }
