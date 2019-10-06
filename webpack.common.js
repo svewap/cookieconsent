@@ -1,7 +1,7 @@
-"use strict"
+"use strict";
 
-const join = require( "path" ).join
-const common = require( "./webpack.common.js" )
+const join = require( "path" ).join;
+const common = require( "./webpack.common.js" );
 const exp = Object.assign({}, common, {
     entry: join( __dirname, 'src', 'index.js' ),
     module: {
@@ -25,5 +25,5 @@ const exp = Object.assign({}, common, {
         }
       ]
     }
-  })
-  module.exports = exp
+  });
+  module.exports = exp;
