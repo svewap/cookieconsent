@@ -24,16 +24,16 @@ export default class CookieConsent extends Base {
 
     // apply blacklist / whitelist
     if (this.options.blacklistPage.includes(location.pathname)) {
-      this.options.enabled = false
+      this.setDisabled();
     }
     if (this.options.whitelistPage.includes(location.pathname)) {
-      this.options.enabled = true
+      this.setEnabled();
     }
 
     // if they have already answered
     if (answers.length > 0) {
-      this.options.enabled = false;
-      setTimeout( () => this.emit( 'initialized', answers ) )
+      this.setDisabled();
+      setTimeout( () => this.emit( 'initialized', this ) )
     } else if ( this.options.legal && this.options.legal.countryCode ) {
       this.initializationComplete( { code: this.options.legal.countryCode } )
     } else if ( this.options.location ) {
@@ -47,9 +47,9 @@ export default class CookieConsent extends Base {
       this.options = new Legal(this.options.legal).applyLaw( this.options, result.code )
     }
     this.popup = new Popup( this.options, this );
-    setTimeout( () => this.emit('initialized', this.popup ), 0 );
+    setTimeout( () => this.emit('initialized', this ), 0 );
 
-    if (this.options.autoOpen && this.options.enabled) {
+    if (this.options.autoOpen && this.isEnabled()) {
       this.autoOpen()
     }
   }
@@ -75,6 +75,17 @@ export default class CookieConsent extends Base {
     return this.popup.destroy()
   }
 
+  setEnabled() {
+    this.options.enabled = true;
+  }
+
+  setDisabled() {
+    this.options.enabled = false;
+  }
+
+  isEnabled() {
+    return this.options.enabled;
+  }
 
   revokeChoice(preventOpen) {
     this.options.enabled = true;
@@ -120,7 +131,6 @@ export default class CookieConsent extends Base {
   setStatuses() {
 
     let checkBoxValues = this.popup.getCheckBoxValues();
-    console.debug(checkBoxValues);
     Object.keys(checkBoxValues).map(categoryName => {
       this.setCategoryCookieValue(categoryName, checkBoxValues[categoryName] ? statusAllow : statusDismiss)
     })
