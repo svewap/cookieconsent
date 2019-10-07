@@ -204,32 +204,37 @@ export default {
       label: 'Uncategorized',
       disabled: false,
       mandatory: false,
-      tooltip: ''
+      tooltip: '',
+      alreadyEnabled : false
     },
     essential: {
       label: 'Essential',
       preselected: true,
       disabled: false,
       mandatory: false,
-      tooltip: 'These cookies are required for the operation of this website.'
+      tooltip: 'These cookies are required for the operation of this website.',
+      alreadyEnabled : false
     },
     personalization: {
       label: 'Personalization',
       disabled: false,
       mandatory: false,
-      tooltip: 'These cookies are required for the personal adaptation of this website.'
+      tooltip: 'These cookies are required for the personal adaptation of this website.',
+      alreadyEnabled : false
     },
     analytics: {
       label: 'Analytics',
       disabled: false,
       mandatory: false,
-      tooltip: 'These cookies help us to improve our website.'
+      tooltip: 'These cookies help us to improve our website.',
+      alreadyEnabled : false
     },
     marketing: {
       label: 'Marketing',
       disabled: false,
       mandatory: false,
-      tooltip: 'These cookies help us to improve our website.'
+      tooltip: 'These cookies help us to improve our website.',
+      alreadyEnabled : false
     }
   },
 

@@ -321,13 +321,13 @@ export default class Popup extends Base {
     el.style.display = 'none';
 
     if (el.classList.contains('cc-window') && this.hasTransition) {
-      el.classList.add('cc-invisible')
+      el.classList.add('cc-invisible');
     }
 
     el.addEventListener('click', event => this.handleButtonClick( event ) );
     el.querySelectorAll( '.cc-btn [type="checkbox"]' ).forEach( checkbox => {
       checkbox.addEventListener( 'change', () => {
-        this.userCategories[ checkbox.name ] = checkbox.checked ? 'ALLOW' : 'DENY'
+        this.userCategories[ checkbox.name ] = checkbox.checked ? 'ALLOW' : 'DENY';
       });
       checkbox.addEventListener( 'click', event => (event.stopPropagation()) )
     });
@@ -335,7 +335,7 @@ export default class Popup extends Base {
       showInfo.addEventListener('mousedown', function ( event ) {
         if ( this === document.activeElement  ) {
           this.blur();
-          event.preventDefault()
+          event.preventDefault();
         }
       })
     });
@@ -343,7 +343,7 @@ export default class Popup extends Base {
     if (opts.autoAttach) {
       try {
         if (!cont.firstChild) {
-          cont.appendChild(el)
+          cont.appendChild(el);
         } else {
           cont.insertBefore(el, cont.firstChild);
         }
@@ -352,7 +352,7 @@ export default class Popup extends Base {
       }
     }
 
-    return el
+    return el;
   }
 
   handleButtonClick(event) {
@@ -362,20 +362,20 @@ export default class Popup extends Base {
 
     if (btn.dataset.action !== undefined) {
       if (btn.dataset.action === 'checkAllAndSave') {
-        this.checkAll()
+        this.checkAll();
       }
       if (btn.dataset.action === 'save' || btn.dataset.action === 'checkAllAndSave') {
         this.cookieConstent.save();
         this.close(true);
-        return
+        return;
       }
       if (btn.dataset.action === 'close') {
         this.cookieConstent.setStatuses(statusDismiss);
         this.close(true);
-        return
+        return;
       }
       if (btn.dataset.action === 'revoke') {
-        this.cookieConstent.revokeChoice()
+        this.cookieConstent.revokeChoice();
       }
     }
 
@@ -386,14 +386,14 @@ export default class Popup extends Base {
    */
   checkAll() {
     this.element.querySelectorAll('.cc-categories input[type=checkbox]').forEach((checkbox,key) => {
-      checkbox.checked = true
+      checkbox.checked = true;
     });
   }
 
   getCheckBoxValues() {
     let values = [];
     this.element.querySelectorAll('.cc-categories input[type=checkbox]').forEach((checkbox,key) => {
-      values[checkbox.attributes['name'].value] = checkbox.checked !== false
+      values[checkbox.attributes['name'].value] = (checkbox.checked !== false) ? statusAllow : statusDismiss;
     });
     return values
   }
@@ -407,7 +407,7 @@ export default class Popup extends Base {
     this.customStyleSelector = isValid ? selector : null;
 
     if (isValid) {
-      addCustomStylesheet(hashStr, palette, '.' + selector)
+      addCustomStylesheet(hashStr, palette, '.' + selector);
     }
     return isValid
   }
