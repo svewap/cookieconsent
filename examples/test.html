@@ -10,13 +10,26 @@
 
 	<link href="examples/style.css" rel="stylesheet">
 
+	<!-- Matomo -->
+	<script type="text/javascript">
+		var _paq = window._paq || [];
+		/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+		(function() {
+			var u="https://matomo.wappler.systems/";
+			_paq.push(['setTrackerUrl', u+'matomo.php']);
+			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+			g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+		})();
+	</script>
+	<!-- End Matomo Code -->
+</head>
 <body class="example5" role="document">
 
 <div class="center-outer fit">
 	<div class="center-inner">
 		<div class="example-window" role="main">
 			<h1>
-				<span>Demo 5</span> Opt-in</h1>
+				<span>Demo Test</span> Opt-in</h1>
 
 			<p>
 				An
@@ -34,7 +47,7 @@
 	</div>
 </div>
 
-<script src="src/bundle.js"></script>
+<script src="build/bundle.js"></script>
 <script>
 
     const CC = window.CookieConsent;
@@ -44,7 +57,7 @@
             header: 'Cookies werden auf dieser Website benutzt!',
             message: 'Diese Website verwendet Cookies, um sicherzustellen, dass Sie das beste Ergebnis auf unserer Website erzielen.',
             link: 'Mehr Informationen',
-            href: 'https://de.partengineering.ddev.site/impressum/',
+            href: 'https://cookiebanner.wappler.systems/',
 			save: 'Auswahl bestätigen',
             selectAll: 'Alle auswählen',
             policy: 'Cookie Richtlinien'
@@ -74,7 +87,23 @@
             }
         }
     });
-    cc.on("initialized", (...args) => {console.log(args);console.debug('initialized')});
-    cc.on("statusChanged", (...args) => {console.log(args);console.debug('statusChanged')});
+    cc.on("initialized", (cc) => {console.log(cc);console.debug('initialized')});
+    cc.on("statusChanged", (category,status,chosenBefore) => {console.log('statusChanged: '+category+' '+status+' '+chosenBefore);});
+	cc.on("allowedCategory", (category) => {
+		console.log('allowedCategory: '+category);
+		if (category === 'analytics') {
+
+		}
+	});
+	cc.on("newAllowedCategory", (category) => {
+		console.log('newAllowedCategory: '+category);
+		if (category === 'analytics') {
+			<!-- Fire Matomo page view event -->
+			_paq.push(['setSiteId', '16']);
+			_paq.push(['trackPageView']);
+
+		}
+	});
+	cc.on("save", (...args) => {console.log(args);});
 
 </script>
