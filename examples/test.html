@@ -91,9 +91,6 @@
     cc.on("statusChanged", (category,status,chosenBefore) => {console.log('statusChanged: '+category+' '+status+' '+chosenBefore);});
 	cc.on("allowedCategory", (category) => {
 		console.log('allowedCategory: '+category);
-		if (category === 'analytics') {
-
-		}
 	});
 	cc.on("newAllowedCategory", (category) => {
 		console.log('newAllowedCategory: '+category);
@@ -102,6 +99,20 @@
 			_paq.push(['setSiteId', '16']);
 			_paq.push(['trackPageView']);
 
+		}
+	});
+	cc.on("dismissedCategory", (category) => {
+		console.log('dismissedCategory: '+category);
+		if (category === 'analytics') {
+
+			<!-- remove matomo cookies -->
+			let cs = document.cookie.split(';');
+			for (let i = 0 ; i < cs.length; i++) {
+				let name = cs[i].split('=')[0].trim();
+				if (name.startsWith('_pk_id') || name.startsWith('_pk_ses')) {
+					cc.clearCookie(cs[i]);
+				}
+			}
 		}
 	});
 	cc.on("save", (...args) => {console.log(args);});

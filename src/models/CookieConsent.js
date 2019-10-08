@@ -16,13 +16,10 @@ export default class CookieConsent extends Base {
   constructor(options = {}) {
     super(defaultOptions, options);
 
-
     let answers = this.getFilteredStatusValuesFromCookies();
 
     this.updateOptionsFromAnswers(answers);
-
     this.checkLists();
-
     this.initialization(answers);
   }
 
@@ -200,10 +197,19 @@ export default class CookieConsent extends Base {
    * Clear all cookie categories statuses
    */
   clearCookieValues() {
-    const {name, domain, path} = this.options.cookie;
+    const {name} = this.options.cookie;
     Object.keys(this.options.categories).map(categoryName => {
-      setCookie(name + '_' + categoryName, '', -1, domain, path);
+      this.clearCookie(name + '_' + categoryName);
     })
+  }
+
+  /**
+   *
+   * @param name
+   */
+  clearCookie(name) {
+    const {domain, path} = this.options.cookie;
+    setCookie(name, '', -1, domain, path);
   }
 
   /**
