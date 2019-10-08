@@ -116,7 +116,6 @@ export default class CookieConsent extends Base {
   }
 
   revokeChoice(preventOpen) {
-    console.debug('revokeChoice'+preventOpen);
     this.setEnabled();
     //this.clearCookieValues();
 
